@@ -29,7 +29,7 @@ export function ChangelogNotifier() {
 				<DialogHeader>
 					<DialogTitle>🚀 What’s New (v{CHANGELOG.version})</DialogTitle>
 					<DialogDescription>
-						Here's what's been recently added or improved.
+						Here&apos;s what&apos;s been recently added or improved.
 					</DialogDescription>
 				</DialogHeader>
 				<ul className="mt-2 list-disc list-inside space-y-1 text-sm text-muted-foreground">
