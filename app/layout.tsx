@@ -4,6 +4,8 @@ import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
+import { ChangelogNotifier } from "@/components/ChangelogNotifier";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
 	variable: "--font-geist-sans",
@@ -37,7 +39,11 @@ export default function RootLayout({
 					disableTransitionOnChange
 				>
 					<Header />
-					<main className="flex-1 px-4 py-8 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl mx-auto w-full">{children}</main>
+					<main className="flex-1 px-4 py-8 md:px-8 lg:px-12 xl:px-16 2xl:px-20 max-w-7xl mx-auto w-full">
+						{/* Show changelog notification on first visit */}
+						<ChangelogNotifier />
+						{children}
+					</main>
 					<Footer />
 				</ThemeProvider>
 			</body>
