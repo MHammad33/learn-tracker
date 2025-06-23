@@ -107,9 +107,7 @@ export default function Dashboard() {
 		if (!todayEntry.trim()) return;
 
 		setImproving(true);
-
-		// wait for 3 seconds to simulate processing
-		await new Promise((resolve) => setTimeout(resolve, 3000));
+		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		try {
 			const res = await fetch("/api/improve", {
@@ -117,6 +115,9 @@ export default function Dashboard() {
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify({ text: todayEntry }),
 			});
+
+			if (!res.ok) throw new Error("Failed to improve");
+
 			const data = await res.json();
 			setTodayEntry(data.improvedText);
 			toast.success("Entry improved!");
