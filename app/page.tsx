@@ -13,7 +13,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Plus, X, Save, Flame } from "lucide-react";
+import { Plus, X, Save, Flame, Wand2 } from "lucide-react";
+import { toast } from "sonner";
 
 interface LearningEntry {
 	id: string;
@@ -28,6 +29,7 @@ export default function Dashboard() {
 	const [newTag, setNewTag] = useState("");
 	const [savedEntry, setSavedEntry] = useState<LearningEntry | null>(null);
 	const [streak, setStreak] = useState(0);
+	const [improving, setImproving] = useState(false);
 
 	const today = new Date().toISOString().split("T")[0];
 
@@ -101,6 +103,30 @@ export default function Dashboard() {
 		return currentStreak;
 	};
 
+	const improveEntry = async () => {
+		if (!todayEntry.trim()) return;
+
+		setImproving(true);
+
+		// wait for 3 seconds to simulate processing
+		await new Promise((resolve) => setTimeout(resolve, 3000));
+
+		try {
+			const res = await fetch("/api/improve", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ text: todayEntry }),
+			});
+			const data = await res.json();
+			setTodayEntry(data.improvedText);
+			toast.success("Entry improved!");
+		} catch (error) {
+			console.error("Improvement failed:", error);
+		} finally {
+			setImproving(false);
+		}
+	};
+
 	return (
 		<div className="space-y-8">
 			{/* Header Section */}
@@ -137,12 +163,43 @@ export default function Dashboard() {
 						</CardDescription>
 					</CardHeader>
 					<CardContent className="space-y-6 relative">
-						<Textarea
-							placeholder="Today I learned about..."
-							value={todayEntry}
-							onChange={(e) => setTodayEntry(e.target.value)}
-							className="min-h-[140px] bg-white/50 dark:bg-gray-800/50 border-2 border-blue-100 dark:border-blue-900 focus:border-blue-300 dark:focus:border-blue-700 rounded-xl resize-none"
-						/>
+						<div className="relative">
+							<Textarea
+								placeholder="Today I learned about..."
+								value={todayEntry}
+								onChange={(e) => setTodayEntry(e.target.value)}
+								readOnly={improving}
+								className={`min-h-[140px] bg-white/50 dark:bg-gray-800/50 border-2 rounded-xl resize-none transition-all duration-500 ease-in-out
+									pr-5 pb-10
+		${
+			improving
+				? "animate-pulse shadow-md shadow-purple-300 dark:shadow-purple-800"
+				: ""
+		}
+
+	`}
+							/>
+
+							<Button
+								variant="ghost"
+								size="icon"
+								title="Improve with AI"
+								aria-label="Improve text with AI"
+								className="absolute bottom-3 right-3 z-10"
+								onClick={improveEntry}
+								disabled={improving}
+							>
+								<Wand2
+									className={`w-5 h-5 transition-all duration-500 ease-in-out
+		${
+			improving
+				? "text-purple-500 scale-125 rotate-12 animate-pulse"
+				: "text-blue-500 hover:scale-110 hover:text-purple-600"
+		}
+	`}
+								/>
+							</Button>
+						</div>
 
 						{/* Tags Section */}
 						<div className="space-y-3">
